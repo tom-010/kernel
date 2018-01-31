@@ -1,4 +1,5 @@
 ;;kernel.asm
+
 bits 32			;nasm directive - The first instruction bits
                 ; 32 is not an x86 assembly instruction. It’s
                 ; a directive to the NASM assembler that specifies
@@ -9,6 +10,13 @@ bits 32			;nasm directive - The first instruction bits
 section .text   ; Here we put our code.
                 ; The second line begins the text section (aka code section).
                 ; This is where we put all our code.
+
+        ;multiboot spec
+        align 4
+        dd 0x1BADB002            ;magic: containing the magic number 0x1BADB002, to identify the header.
+        dd 0x00                  ;flags: We will not care about this field. We will simply set it to zero.
+        dd - (0x1BADB002 + 0x00) ;checksum. m+f+c should be zero: the checksum field when added to the fields ‘magic’ and ‘flags’ must give zero.
+       ;  \--The dd defines a double word of size 4 bytes.
 
 global start    ;global is another NASM directive to set symbols from source code as global.
                 ; By doing so, the linker knows where the symbol start is; which happens to
