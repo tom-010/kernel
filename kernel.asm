@@ -22,9 +22,40 @@ global start    ;global is another NASM directive to set symbols from source cod
                 ; By doing so, the linker knows where the symbol start is; which happens to
                 ; be our entry point.
 
+global keyboard_handler
+global read_port
+global write_port
+global load_idt
+
+
 extern kmain    ;kmain is defined in the c file
                 ; kmain is our function that will be defined in our kernel.c file. extern
                 ; declares that the function is declared elsewhere
+
+extern keyboard_handler_main
+
+read_port:
+	mov edx, [esp + 4]
+			;al is the lower 8 bits of eax
+	in al, dx	;dx is the lower 16 bits of edx
+	ret
+
+write_port:
+	mov   edx, [esp + 4]
+	mov   al, [esp + 4 + 4]
+	out   dx, al
+	ret
+
+load_idt:
+	mov edx, [esp + 4]
+	lidt [edx]
+	sti 				;turn on interrupts
+	ret
+
+keyboard_handler:
+	call    keyboard_handler_main
+	iretd
+
 
 start:          ;Then, we have the start function, which calls the
                 ; kmain function and halts the CPU using the hlt instruction.
