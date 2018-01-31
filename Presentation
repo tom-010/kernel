@@ -1,0 +1,365 @@
+/ $$   /$$                                         /$$         /$$    /$$$$$$    /$$
+| $$  /$$/                                        | $$       /$$$$   /$$$_  $$ /$$$$
+| $$ /$$/   /$$$$$$   /$$$$$$  /$$$$$$$   /$$$$$$ | $$      |_  $$  | $$$$\ $$|_  $$
+| $$$$$/   /$$__  $$ /$$__  $$| $$__  $$ /$$__  $$| $$        | $$  | $$ $$ $$  | $$
+| $$  $$  | $$$$$$$$| $$  \__/| $$  \ $$| $$$$$$$$| $$        | $$  | $$\ $$$$  | $$
+| $$\  $$ | $$_____/| $$      | $$  | $$| $$_____/| $$        | $$  | $$ \ $$$  | $$
+| $$ \  $$|  $$$$$$$| $$      | $$  | $$|  $$$$$$$| $$       /$$$$$$|  $$$$$$/ /$$$$$$
+|__/  \__/ \_______/|__/      |__/  |__/ \_______/|__/      |______/ \______/ |______/
+
+BY THOMAS DENIFFEL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1. Wie startet ein Computer
+
+    - Unterschied Hard- und Software
+
+    - Beim Start treffen sich beide Welten
+
+    - Erklärung in diesem Video: https://www.youtube.com/watch?v=zIYkol851dU
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2. Wie ist ein Betriebssystem aufgebaut?
+
+- Verschiedene Schichten: https://youtu.be/MzVGL44eq9w?t=339
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3. Wie bootet ein Betriebssystem nun?
+
+
+- Bevor wir den Kernen schreiben. Hier der Bootprozess (X86)
+
+    1. Die meisten Register sind definiert (Wie der Instruction Pointer EIP)
+       Der hält die Speicheradresse für den nächsten Befehl für die CPU
+
+       EIP: 0xFFFFFFF0     <-- Hardcoded       (letze 16 bit des 32 bit Adress-Spaces)
+
+       Deshalb fängt ein X86 Computer hier an zu arbeiten
+
+
+    2. Das Board, das eingebaut ist, mappt diesen Speicher ins BIOS, nicht in den RAM <-- Das BIOS kann auf den Bereich zugreifen
+
+    3. Das BIOS kopiert sich selbst ins RAM <-- Geschwindigkeit
+
+    4. Das BIOS wird ausgeführt
+
+    5. Das BIOS sucht nach einem Bootbaren Gerät
+
+        => Dazu überprüft es eine bestimmte "Magic Number" um zu entscheiden, ob das Gerät bootbar ist oder nicht
+
+        -> 511 oder 512 an der Stelle 0xAA55 des Gerätespeichers
+
+    6. Sobald das BIOS ein Bootbares Gerät gefunden hat, kopiert es den ersten Sektor in den RAM, (ab 0x7c00)
+
+    7. Jezt Springt es an den diese Adresse und führt den Code aus der hier steht: Bootloader
+
+    8. Bootloader lädt nun den nächsten Teil an Position 0x100000 und der Start beginnt. Beispiel GRUB
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4. Start
+
+ - Am Anfang brauchen wir Assebler -> Wir versuchen es aber so wenig wie möglich zu halten
+
+
+ ============================================================================================================
+ - 1. große Frage: Wie stellen wir sicher, dass unser Assebler-Code als Startpukt für den Kernel dienen kann?
+ ============================================================================================================
+
+
+ => Wir nutzen den Linker, der ein Kernel-Programm erstellt
+    Dem Script sagen wir, dass wir explizit an 0x100000 starten möchten ( Da müssen wir ja stehen)
+    -> Der Kernel wird hier starten
+
+    Der Assembly Code:
+
+---------------------kernel.asm-------------------------
+;;kernel.asm
+bits 32			;nasm directive - 32 bit
+section .text
+
+global start
+extern kmain	        ;kmain is defined in the c file
+
+start:
+cli 			;block interrupts
+mov esp, stack_space	;set stack pointer
+call kmain
+hlt		 	;halt the CPU
+
+section .bss
+resb 8192		;8KB for stack
+stack_space:
+--------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Next Slide
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Next Slide
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Next Slide
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Next Slide
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
