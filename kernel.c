@@ -45,6 +45,12 @@ void kmain(void) {
     clear_screen();
     welcome_message();
 
+    const char *str = "Hallo im BCG-OS";
+    print(str);
+    new_line();
+    new_line();
+
+
     idt_init();
     kb_init();
 
